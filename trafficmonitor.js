@@ -27,6 +27,14 @@ const LOCATIONS = [
     {
         origin: { address: 'Indira Nagar, Lucknow, Uttar Pradesh, India' },
         destination: { address: 'Mahanagar, Lucknow, Uttar Pradesh, India' }
+    },
+    {
+        origin: { address: 'Narpat Khera, Lucknow, Uttar Pradesh, India' },
+        destination: { address: 'Awadh Chauraha, Lucknow, Uttar Pradesh, India' }
+    },
+    {
+        origin: { address: 'Resurrection Church,Bengaluru,Karnataka, India' },
+        destination: { address: 'Namma Bengaluru Aquarium,Bengaluru,Karnataka, India' }
     }
 ];
 
