@@ -1,0 +1,38 @@
+name: Traffic Monitor
+
+on:
+  schedule:
+    - cron: '*/30 * * * *'  # Every 30 minutes
+  workflow_dispatch:         # Also allow manual run
+
+jobs:
+  monitor-traffic:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: |
+          if [ -f package.json ]; then
+            npm install
+          fi
+
+      - name: Run traffic monitor
+        env:
+          GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
+        run: node traffic-monitor.js
+
+      - name: Commit and push logs
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add traffic-log.json
+          git diff --cached --quiet && echo "No changes to commit" || git commit -m "Update traffic log - $(date)"
+          git push
