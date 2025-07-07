@@ -2,8 +2,8 @@ name: Traffic Monitor
 
 on:
   schedule:
-    - cron: '*/30 * * * *'  # Every 30 minutes
-  workflow_dispatch:         # Also allow manual run
+    - cron: "*/30 * * * *" # Every 30 minutes
+  workflow_dispatch: # Also allow manual run
 
 jobs:
   monitor-traffic:
@@ -16,7 +16,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: "18"
 
       - name: Install dependencies
         run: |
@@ -27,7 +27,7 @@ jobs:
       - name: Run traffic monitor
         env:
           GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
-        run: node traffic-monitor.js
+        run: node trafficmonitor.js
 
       - name: Commit and push logs
         run: |

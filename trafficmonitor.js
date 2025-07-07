@@ -1,5 +1,13 @@
 const fs = require('fs');
-require('dotenv').config();
+
+if (process.env.GITHUB_ACTIONS !== 'true') {
+    require('dotenv').config();
+}
+
+const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
+
+
+
 
 async function post(url, body, options) {
     const data = await fetch(url, {
