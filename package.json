@@ -1,0 +1,14 @@
+{
+  "name": "trafficproject",
+  "version": "1.0.0",
+  "main": "trafficmonitor.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "dotenv": "^17.0.1"
+  }
+}
