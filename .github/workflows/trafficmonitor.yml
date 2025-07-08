@@ -2,8 +2,8 @@ name: Traffic Monitor
 
 on:
   schedule:
-    - cron: "*/30 * * * *" # Every 30 minutes
-  workflow_dispatch: # Also allow manual run
+    - cron: "*/45 * * * *"  # Every 5 minutes
+  workflow_dispatch:        # Also allow manual run
 
 jobs:
   monitor-traffic:
@@ -29,10 +29,13 @@ jobs:
           GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
         run: node trafficmonitor.js
 
-      - name: Commit and push logs
+      - name: Commit, pull, and push logs
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add traffic-log.json
           git diff --cached --quiet && echo "No changes to commit" || git commit -m "Update traffic log - $(date)"
-          git push
+          git pull --rebase https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git main
+          git push https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git HEAD:main
