@@ -21,29 +21,38 @@ const API_KEY = process.env.GOOGLE_MAPS_API_KEY;
 
 const LOCATIONS = [
     {
-        origin: { address: 'Kadikoye,Istanbul,Turkey' },
-        destination: { address: 'Maltepe,Istanbul,Turkey' }
+        origin: { address: 'CM House,Ranchi,Jharkhand' },
+        destination: { address: 'Harmu Chowk, Ranchi, Jharkhand' }
     },
     {
-        origin: { address: 'India Gate,New Delhi, India' },
-        destination: { address: 'Connaught Place,New Delhi, India' }
+        origin: { address: 'Harmu Chowk,Ranchi,Jharkhand' },
+        destination: { address: 'HEC gate, Ranchi, Jharkhand' }
     },
     {
-        origin: { address: 'Aminabad, Lucknow, Uttar Pradesh, India' },
-        destination: { address: 'Lucknow Airport, Amausi, Uttar Pradesh, India' }
+        origin: { address: 'Albertekka Chowk,Ranchi,Jharkhand' },
+        destination: { address: 'Rajendra Chowk, Ranchi, Jharkhand' }
     },
     {
-        origin: { address: 'Indira Nagar, Lucknow, Uttar Pradesh, India' },
-        destination: { address: 'Mahanagar, Lucknow, Uttar Pradesh, India' }
+        origin: { address: 'Radium Road,Ranchi,Jharkhand' },
+        destination: { address: 'Albertekka chowk, Ranchi, Jharkhand' }
     },
     {
-        origin: { address: 'Narpat Khera, Lucknow, Uttar Pradesh, India' },
-        destination: { address: 'Awadh Chauraha, Lucknow, Uttar Pradesh, India' }
+        origin: { address: 'Raj Bhawan Chowk,Ranchi,Jharkhand' },
+        destination: { address: 'Booty More Chowk, Ranchi, Jharkhand' }
     },
     {
-        origin: { address: 'Resurrection Church,Bengaluru,Karnataka, India' },
-        destination: { address: 'Namma Bengaluru Aquarium,Bengaluru,Karnataka, India' }
-    }
+        origin: { address: 'Mecon Flyover,Ranchi,Jharkhand' },
+        destination: { address: 'Booty More Chowk, Ranchi,Jharkhand' }
+    },
+    {
+        origin: { address: 'Mecon Chowk,Ranchi,Jharkhand' },
+        destination: { address: 'Birsa Munda Airport, Ranchi,Jharkhand' }
+    },
+    {
+        origin: { address: 'Mecon Chowk,Ranchi,Jharkhand' },
+        destination: { address: 'Birsa Chowk, Ranchi, Jharkhand' }
+    },
+    
 ];
 
 function parseISODuration(durationStr) {
