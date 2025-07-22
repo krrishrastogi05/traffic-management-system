@@ -4,10 +4,13 @@ if (process.env.GITHUB_ACTIONS !== 'true') {
     require('dotenv').config();
 }
 
+
+//no fetch in node by default so node-fetch utility being used 
 const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
 
 
 
+//function to make a post requests
 
 async function post(url, body, options) {
     const data = await fetch(url, {
@@ -19,41 +22,12 @@ async function post(url, body, options) {
 }
 const API_KEY = process.env.GOOGLE_MAPS_API_KEY;
 
-const LOCATIONS = [
-    {
-        origin: { address: 'CM House,Ranchi,Jharkhand' },
-        destination: { address: 'Harmu Chowk, Ranchi, Jharkhand' }
-    },
-    {
-        origin: { address: 'Harmu Chowk,Ranchi,Jharkhand' },
-        destination: { address: 'HEC gate, Ranchi, Jharkhand' }
-    },
-    {
-        origin: { address: 'Albertekka Chowk,Ranchi,Jharkhand' },
-        destination: { address: 'Rajendra Chowk, Ranchi, Jharkhand' }
-    },
-    {
-        origin: { address: 'Radium Road,Ranchi,Jharkhand' },
-        destination: { address: 'Albertekka chowk, Ranchi, Jharkhand' }
-    },
-    {
-        origin: { address: 'Raj Bhawan Chowk,Ranchi,Jharkhand' },
-        destination: { address: 'Booty More Chowk, Ranchi, Jharkhand' }
-    },
-    {
-        origin: { address: 'Mecon Flyover,Ranchi,Jharkhand' },
-        destination: { address: 'Booty More Chowk, Ranchi,Jharkhand' }
-    },
-    {
-        origin: { address: 'Mecon Chowk,Ranchi,Jharkhand' },
-        destination: { address: 'Birsa Munda Airport, Ranchi,Jharkhand' }
-    },
-    {
-        origin: { address: 'Mecon Chowk,Ranchi,Jharkhand' },
-        destination: { address: 'Birsa Chowk, Ranchi, Jharkhand' }
-    },
-    
-];
+
+//fetching the array of locations from locations.js
+const LOCATIONS = require('./locations');
+
+
+//Google returns me duration in ISO 8601 converting that to seconds format
 
 function parseISODuration(durationStr) {
     // Handle simple seconds format (e.g., "2486s")
@@ -73,7 +47,10 @@ function parseISODuration(durationStr) {
     return (hours * 3600 + minutes * 60 + seconds);
 }
 
-// Add delay between API calls to avoid rate limiting
+
+
+// voluntary delay between API calls to resolve rate limiting issues
+
 function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -97,6 +74,13 @@ async function checkTraffic() {
     // Set departure time to 5 minutes in the future (API requirement)
     const departureTime = new Date(Date.now() + 5 * 60 * 1000).toISOString();
     const currentTime = new Date();
+   
+    const nowIst = new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" });
+    const IstDate = nowIst.substring(0, 9);
+    const IstTime = nowIst.substring(11, 22);
+
+
+
     const url = 'https://routes.googleapis.com/directions/v2:computeRoutes';
 
     console.log(`\n🚦 Traffic Check at ${formatTime(currentTime)} (IST) - ${currentTime.toDateString()}`);
@@ -158,8 +142,8 @@ async function checkTraffic() {
             else if (trafficDelay > 120) trafficEmoji = '🟡'; // Yellow - Moderate (2+ min delay)
 
             const log = {
-                timestamp: new Date().toISOString(),
-                departure_time: departureTime,
+                date:IstDate,
+                departure_time: IstTime,
                 origin: route.origin.address,
                 destination: route.destination.address,
                 realtime_min: (rt / 60).toFixed(1),
