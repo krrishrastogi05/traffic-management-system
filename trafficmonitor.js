@@ -91,7 +91,8 @@ async function checkTraffic() {
 
         // Add delay between requests (except for the first one)
         if (i > 0) {
-            await delay(1000); // 1 second delay between requests
+            await delay(500
+            ); // 1 second delay between requests
         }
 
         const body = {
@@ -147,12 +148,12 @@ async function checkTraffic() {
                 origin: route.origin.address,
                 destination: route.destination.address,
                 realtime_min: (rt / 60).toFixed(1),
-                historical_min: (ht / 60).toFixed(1),
-                traffic_delay_min: (trafficDelay / 60).toFixed(1),
-                delay_percent: trafficDelayPercent + '%',
-                distance_km: r.distanceMeters ? (r.distanceMeters / 1000).toFixed(1) : 'N/A',
-                unusual: isUnusual,
-                traffic_condition: trafficEmoji
+                // historical_min: (ht / 60).toFixed(1),
+                // traffic_delay_min: (trafficDelay / 60).toFixed(1),
+                // delay_percent: trafficDelayPercent + '%',
+                // distance_km: r.distanceMeters ? (r.distanceMeters / 1000).toFixed(1) : 'N/A',
+                // unusual: isUnusual,
+                // traffic_condition: trafficEmoji
             };
 
             // Create log file if it doesn't exist
