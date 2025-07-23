@@ -1,7 +1,7 @@
 name: Traffic Monitor
 
 on:
-  workflow_dispatch: # Allows manual and API-triggered runs
+  workflow_dispatch:
 
 jobs:
   monitor-traffic:
@@ -22,39 +22,19 @@ jobs:
             npm install
           fi
 
-      - name: Run traffic monitor script
-        env:
-          GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
-        run: node trafficmonitor.js
-
-      # New step to check if the current time is within your desired ranges
-      - name: Check current time in IST
+      - name: Check if current time is within allowed windows
         id: time_check
         run: |
-          # Get current hour and minute in UTC
           UTC_HOUR=$(date -u +'%H')
           UTC_MINUTE=$(date -u +'%M')
-
-          # Convert current UTC time to total minutes from midnight for easy comparison
-          # We use 10# to ensure numbers are treated as base-10
           UTC_TOTAL_MINUTES=$((10#$UTC_HOUR * 60 + 10#$UTC_MINUTE))
 
-          # --- Define your IST time windows in UTC minutes from midnight ---
-          # IST is UTC+5:30.
-          
-          # 1. 9:00 AM - 11:00 AM IST -> 3:30 - 5:30 UTC
-          START1=$((3 * 60 + 30)) # 210
-          END1=$((5 * 60 + 30))   # 330
-
-          # 2. 1:00 PM - 4:00 PM IST -> 7:30 - 10:30 UTC
-          START2=$((7 * 60 + 30)) # 450
-          END2=$((10 * 60 + 30))  # 630
-
-          # 3. 6:30 PM - 9:00 PM IST -> 13:00 - 15:30 UTC
-          START3=$((13 * 60))      # 780
-          END3=$((15 * 60 + 30))   # 930
-
-          echo "Current UTC time is $UTC_HOUR:$UTC_MINUTE ($UTC_TOTAL_MINUTES minutes)."
+          START1=$((3 * 60 + 30))
+          END1=$((5 * 60 + 30))
+          START2=$((7 * 60 + 30))
+          END2=$((10 * 60 + 30))
+          START3=$((13 * 60))
+          END3=$((15 * 60 + 30))
 
           should_commit="false"
           if (( UTC_TOTAL_MINUTES >= START1 && UTC_TOTAL_MINUTES <= END1 )); then
@@ -64,17 +44,16 @@ jobs:
           elif (( UTC_TOTAL_MINUTES >= START3 && UTC_TOTAL_MINUTES <= END3 )); then
             should_commit="true"
           fi
-          
-          if [[ "$should_commit" == "true" ]]; then
-            echo "✅ Time is within the allowed range. Proceeding to commit."
-            echo "should_commit=true" >> $GITHUB_OUTPUT
-          else
-            echo "❌ Time is outside the allowed range. Skipping commit."
-            echo "should_commit=false" >> $GITHUB_OUTPUT
-          fi
 
-      # This step will now only run if the time check step sets should_commit to true
-      - name: Commit, pull, and push logs
+          echo "should_commit=${should_commit}" >> $GITHUB_OUTPUT
+
+      - name: Run traffic monitor
+        if: steps.time_check.outputs.should_commit == 'true'
+        env:
+          GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
+        run: node trafficmonitor.js
+
+      - name: Commit and push if log updated
         if: steps.time_check.outputs.should_commit == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -82,11 +61,8 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add traffic-log.json
-          # Check if there are changes to commit to avoid errors
           if ! git diff --cached --quiet; then
-            git commit -m "Update traffic log - $(date)"
+            git commit -m "Update traffic log - $(date -u)"
             git pull --rebase
             git push
-          else
-            echo "No changes to commit."
           fi
