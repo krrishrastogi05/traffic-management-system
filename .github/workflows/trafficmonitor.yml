@@ -2,10 +2,7 @@ name: Traffic Monitor
 
 on:
   schedule:
-    # 5:00 AM IST = 11:30 PM UTC (previous day)
-    - cron: "30 23 * * *"
-    # 6:00 AM IST = 12:30 AM UTC
-    - cron: "30 0 * * *"
+    - cron: "*/15 * * * *"  # Every 15 minutes UTC
   workflow_dispatch:        # Also allow manual run
 
 jobs:
