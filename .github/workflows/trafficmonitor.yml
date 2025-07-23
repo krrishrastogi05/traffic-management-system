@@ -24,7 +24,7 @@ jobs:
 
       - name: Run traffic monitor script
         env:
-          Maps_API_KEY: ${{ secrets.Maps_API_KEY }}
+          Maps_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
         run: node trafficmonitor.js
 
       # New step to check if the current time is within your desired ranges
