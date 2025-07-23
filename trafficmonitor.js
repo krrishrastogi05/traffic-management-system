@@ -75,9 +75,17 @@ async function checkTraffic() {
     const departureTime = new Date(Date.now() + 5 * 60 * 1000).toISOString();
     const currentTime = new Date();
    
-    const nowIst = new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" });
-    const IstDate = nowIst.substring(0, 9);
-    const IstTime = nowIst.substring(11, 22);
+
+    //updated
+    const now = new Date();
+const IstDate = now.toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata" });
+const IstTime = now.toLocaleTimeString("en-IN", {
+    timeZone: "Asia/Kolkata",
+    hour12: true,
+    hour: '2-digit',
+    minute: '2-digit'
+});
+
 
 
 
@@ -133,14 +141,28 @@ async function checkTraffic() {
 
             const rt = parseISODuration(r.duration);
             const ht = parseISODuration(r.staticDuration);
-            const trafficDelay = rt - ht;
-            const trafficDelayPercent = ((rt - ht) / ht * 100).toFixed(1);
-            const isUnusual = rt > 1.5 * ht;
+            const free_flow = route.freeload_time;
+
+            //comparing this to free flow time now
+            // const trafficDelay = rt - ht;
+            // const trafficDelayPercent = ((rt - ht) / ht * 100).toFixed(1);
+            // const isUnusual = rt > 1.5 * ht;
+          
+            //time is returned in seconds 
+            const trafficDelay = rt - free_flow * 60;
+
+            const trafficDelayPercent = ((rt - free_flow * 60) / (free_flow * 60) * 100).toFixed(1);
+
+            
 
             // Traffic condition emoji
+            // let trafficEmoji = '🟢'; // Green - Normal
+            // if (trafficDelay > 300) trafficEmoji = '🔴'; // Red - Heavy (5+ min delay)
+            // else if (trafficDelay > 120) trafficEmoji = '🟡'; // Yellow - Moderate (2+ min delay)
+
             let trafficEmoji = '🟢'; // Green - Normal
-            if (trafficDelay > 300) trafficEmoji = '🔴'; // Red - Heavy (5+ min delay)
-            else if (trafficDelay > 120) trafficEmoji = '🟡'; // Yellow - Moderate (2+ min delay)
+            if (trafficDelayPercent>=25 && trafficDelayPercent<=60) trafficEmoji = '🟡'; 
+            else if (trafficDelayPercent>=60) trafficEmoji = '🔴'; 
 
             const log = {
                 date:IstDate,
@@ -148,12 +170,13 @@ async function checkTraffic() {
                 origin: route.origin.address,
                 destination: route.destination.address,
                 realtime_min: (rt / 60).toFixed(1),
+                freeflow_time: free_flow,
                 // historical_min: (ht / 60).toFixed(1),
-                // traffic_delay_min: (trafficDelay / 60).toFixed(1),
-                // delay_percent: trafficDelayPercent + '%',
-                // distance_km: r.distanceMeters ? (r.distanceMeters / 1000).toFixed(1) : 'N/A',
+                traffic_delay_min: (trafficDelay / 60).toFixed(1),
+                delay_percent: trafficDelayPercent + '%',
+                distance_km: r.distanceMeters ? (r.distanceMeters / 1000).toFixed(1) : 'N/A',
                 // unusual: isUnusual,
-                // traffic_condition: trafficEmoji
+                traffic_condition: trafficEmoji
             };
 
             // Create log file if it doesn't exist
@@ -165,10 +188,10 @@ async function checkTraffic() {
 
             // Enhanced console output
             console.log(`   ${trafficEmoji} Distance: ${log.distance_km} km`);
-            console.log(`   ⏱️  Normal time: ${log.historical_min} min`);
+            // console.log(`   ⏱️  Normal time: ${log.historical_min} min`);
             console.log(`   🚗 Current time: ${log.realtime_min} min`);
             console.log(`   ⚠️  Traffic delay: ${log.traffic_delay_min} min (${log.delay_percent})`);
-            console.log(`   ${isUnusual ? '🚨 UNUSUAL TRAFFIC!' : '✅ Normal traffic'}`);
+            // console.log(`   ${isUnusual ? '🚨 UNUSUAL TRAFFIC!' : '✅ Normal traffic'}`);
 
         } catch (err) {
             console.error(`❌ Error fetching route for ${route.origin.address} → ${route.destination.address}:`);
