@@ -56,7 +56,7 @@ jobs:
 
           echo "Current UTC time is $UTC_HOUR:$UTC_MINUTE ($UTC_TOTAL_MINUTES minutes)."
 
-          should_commit="true"
+          should_commit="false"
           if (( UTC_TOTAL_MINUTES >= START1 && UTC_TOTAL_MINUTES <= END1 )); then
             should_commit="true"
           elif (( UTC_TOTAL_MINUTES >= START2 && UTC_TOTAL_MINUTES <= END2 )); then
